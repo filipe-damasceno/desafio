@@ -16,3 +16,9 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/', function () {
+    return response()->json(['message' => 'API', 'versao' => config('app.versao').' v1']);;
+});
+
+Route::post('/payload', 'OrquestraController@payload');
