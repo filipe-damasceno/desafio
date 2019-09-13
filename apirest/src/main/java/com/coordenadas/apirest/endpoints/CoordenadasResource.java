@@ -23,7 +23,7 @@ public class CoordenadasResource {
     
     @GetMapping("/vehicleId/{vehicleId}")
     public List<Coordenadas> listaCoordenadas(@PathVariable(value="vehicleId") long vehicleId){
-        return coordenadasRepository.findByVehicleIdOrderByInstantAsc(vehicleId);
+        return coordenadasRepository.findByVehicleId(vehicleId);
     }
  
     @PostMapping("/coordenada")
