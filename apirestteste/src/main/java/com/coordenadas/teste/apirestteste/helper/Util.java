@@ -15,11 +15,17 @@ import java.util.Random;
  * @author filip
  */
 public class Util {
-    private int vehicleIdA;
-    private int vehicleIdB;
-    private String urlBase;
+    public int vehicleIdA;
+    public int vehicleIdB;
+    public String urlBase;
     
-    public Util(String urlBase, int vehicleIdA,int vehicleIdB){
+    private static Util singleton = new Util();
+    
+    public static Util getInstance(){
+        return singleton;
+    }
+    
+    public void init(String urlBase, int vehicleIdA,int vehicleIdB){
         this.urlBase = urlBase;
         this.vehicleIdA = vehicleIdA;
         this.vehicleIdB = vehicleIdB;
@@ -88,45 +94,4 @@ public class Util {
         return response;
     }
 
-    /**
-     * @return the vehicleIdA
-     */
-    public int getVehicleIdA() {
-        return vehicleIdA;
-    }
-
-    /**
-     * @param vehicleIdA the vehicleIdA to set
-     */
-    public void setVehicleIdA(int vehicleIdA) {
-        this.vehicleIdA = vehicleIdA;
-    }
-
-    /**
-     * @return the vehicleIdB
-     */
-    public int getVehicleIdB() {
-        return vehicleIdB;
-    }
-
-    /**
-     * @param vehicleIdB the vehicleIdB to set
-     */
-    public void setVehicleIdB(int vehicleIdB) {
-        this.vehicleIdB = vehicleIdB;
-    }
-
-    /**
-     * @return the urlBase
-     */
-    public String getUrlBase() {
-        return urlBase;
-    }
-
-    /**
-     * @param urlBase the urlBase to set
-     */
-    public void setUrlBase(String urlBase) {
-        this.urlBase = urlBase;
-    }
 }
