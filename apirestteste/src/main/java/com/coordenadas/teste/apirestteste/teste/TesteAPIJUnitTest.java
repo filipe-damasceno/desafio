@@ -16,12 +16,9 @@ import org.junit.Assert.*;
  * @author Filipe
  */
 public class TesteAPIJUnitTest extends TestCase{
-    
-    
-    
-    
+  
      @Test
-     public void testeEnvioCoordenadas() {
+     public void testeOrderByAsc() {
         List<String> listaCoordenadas;
         listaCoordenadas = Util.getInstance().initCoordenadasVehicleIdA();
         listaCoordenadas.addAll(Util.getInstance().initCoordenadasVehicleIdB());
@@ -37,10 +34,8 @@ public class TesteAPIJUnitTest extends TestCase{
                assertTrue("IOException in post",false);
             }             
         }
-     }
-     
-     @Test
-     public void testeOrderByAsc() {
+         
+         
         try {            
             Response response = Util.getInstance().sendGet( Util.getInstance().vehicleIdA);
             assertEquals(response.code(),200);
