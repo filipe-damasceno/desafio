@@ -28,7 +28,8 @@ public class TesteAPIJUnitTest extends TestCase{
             String json = listaCoordenadas.get(index);
             try {
                Response response = Util.getInstance().sendPost(json);
-               assertEquals(response.code(),200);
+               while(response.code() != 200)
+                   response = Util.getInstance().sendPost(json);               
                listaCoordenadas.remove(index);
             } catch (IOException ex) {
                assertTrue("IOException in post",false);

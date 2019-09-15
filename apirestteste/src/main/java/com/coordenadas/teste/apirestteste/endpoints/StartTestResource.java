@@ -2,10 +2,14 @@ package com.coordenadas.teste.apirestteste.endpoints;
 
 import com.coordenadas.teste.apirestteste.helper.Util;
 import com.coordenadas.teste.apirestteste.teste.TesteAPIJUnitTest;
+
 import java.util.List;
+import javax.xml.ws.Response;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,5 +30,9 @@ public class StartTestResource {
         Result result = JUnitCore.runClasses(TesteAPIJUnitTest.class);
         
         return "Executados: " + result.getRunCount()+";Falhas: " + result.getFailureCount();
+    }
+    @GetMapping("/status")
+    public ResponseEntity status(){
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
