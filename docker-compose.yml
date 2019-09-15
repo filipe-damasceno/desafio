@@ -1,0 +1,23 @@
+version: '3'
+services:
+ docker-app:
+    image: app
+    build: ./apirest    
+    ports:
+      - "8080:8080"
+    depends_on:
+      - docker-postgres
+ docker-postgres:
+    image: postgres:10.4
+    environment:
+      - POSTGRES_DB=apirest
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+ docker-app-teste:
+    image: apptest
+    build: ./apirestteste    
+    ports:
+      - "9000:9000"
+    depends_on:
+      - docker-app
+  
