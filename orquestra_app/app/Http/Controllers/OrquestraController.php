@@ -23,6 +23,9 @@ class OrquestraController extends Controller
 
 
     public function payload(Request $request){
+        
+
+
         $dados =(object) $request->all();
         $branche = $dados->pull_request['head']['ref'];
         $cloneUrl = $dados->repository['clone_url'];
@@ -31,23 +34,106 @@ class OrquestraController extends Controller
         $statusesUrl = $dados->pull_request['statuses_url'];
         
         
-        
+        #CLONE repositorio PR 
         exec('git clone -b '.$branche.' '.$cloneUrl);
+        Log::info('Clone respositorio PR '.$branche);
+        #BUILD apirest 
         exec('mvn clean package -Dmaven.test.skip=true -f desafio/apirest/pom.xml');
+        Log::info('Build project apirest');
+        #BUILD apirestteste 
         exec('mvn clean package -Dmaven.test.skip=true -f desafio/apirestteste/pom.xml');
-        exec('docker-compose -f desafio/docker-compose.yml up -d');
-        $responseObj = $this->startTeste();
+        Log::info('Build project apirestteste');
 
+        #BUILD dockerfiles
+        exec('docker-compose -f desafio/docker-compose.yml build');
+        Log::info('Build dockerfiles');
+        #Pull image postgres
+        exec('docker pull postgres:10.4');
+        Log::info('Pull image postgres');
+        #BUILD docker-compose up
+        Log::info('Run docker-compose up init');
+        exec('docker-compose -f desafio/docker-compose.yml up -d');
+        Log::info('Run docker-compose up finish');
+
+        Log::info('check status services');
+        $statusTest = $this->statusServicesTest();        
+        while($statusTest != true)
+            $statusTest = $this->statusServicesTest();
+        Log::info('status service test:'.$statusTest);
         
-        exec('docker-compose -f desafio/docker-compose.yml stop');
-        exec('docker-compose -f desafio/docker-compose.yml rm -f');
-        exec('docker rmi $(docker images -q)');
+        $statusAPI = $this->statusServicesAPI();
+        while($statusAPI != true)
+            $statusAPI = $this->statusServicesAPI();
+        Log::info('status service test:'.$statusAPI);
+
+        Log::info('Start test container: localhost:9000 init');
+        
+        $responseObj = $this->startTeste();             
+        Log::info('test container: localhost:9000 finish: '.$responseObj);
+        
+        
+        Log::info('comment result test in PR gitHub');
         $this->comentResultTest($comentUrl,$responseObj);
+        Log::info('set status in PR gitHub');
         $this->statusSetPR($statusesUrl,$responseObj,$branche);
         
-        Log::info('Payload '.json_encode($dados));
-        return response()->json(['status' => "status_OK",'resultado'=>$responseObj], 202); 
+        Log::info('stop containers');
+        exec('docker-compose -f desafio/docker-compose.yml stop');
+        Log::info('rm containers');
+        exec('docker-compose -f desafio/docker-compose.yml rm -f');
+        Log::info('rmi images');
+        exec('docker rmi app');        
+        exec('docker rmi apptest');        
+        return response()->json(['status' => "status_OK",'resultado'=>$responseObj], 200); 
     }
+
+    public function statusServicesTest(){
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+        CURLOPT_PORT => "9000",
+        CURLOPT_URL => "http://localhost:9000/api/v1/status",
+        CURLOPT_RETURNTRANSFER => true,        
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_HTTPHEADER => array(
+            "Accept: */*"            
+        ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        
+        if($err)            
+            return false;        
+        else
+            return true;
+    }
+
+    public function statusServicesAPI(){
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_PORT => "8080",
+            CURLOPT_URL => "http://localhost:8080/api/v1/status",
+            CURLOPT_RETURNTRANSFER => true,            
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+              "Accept: */*"              
+            ),
+          ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        
+        if($err)            
+            return false;        
+        else
+            return true;
+    }
+
 
     public function comentResultTest($urlComent,$result){
         $curl = curl_init();
@@ -66,27 +152,27 @@ class OrquestraController extends Controller
         ));
 
         $response = curl_exec($curl);
+        curl_close($curl);
         return $response;
     }
 
     public function statusSetPR($statusesUrl,$responseObj,$branche){
         $curl = curl_init();
 
-        if(explode(':',explode(';',$responseObj)[1])[1] == 0){
-            $description = 'Sucesso no teste';
-            $state = 'success';
-        }
-        elseif(explode(':',explode(';',$responseObj)[1])[1] > 0){
-            $description = 'Falha no teste';
-            $state = 'failure';
-        }
-        else{
-            $description = 'Serviço de teste inacessivel';
+        try{
+            $erros = explode(':',explode(';',$responseObj)[1])[1];
+            if($erros == 0){
+                $description = 'Sucesso no teste';
+                $state = 'success';
+            }
+            elseif($erros > 0){
+                $description = 'Falha no teste';
+                $state = 'failure';
+            }
+        }catch(Exception $e){ 
+            $description = 'Service test return inesperado';
             $state = 'error';
         }
-
-
-            
                 
               
         $body = [
@@ -96,11 +182,7 @@ class OrquestraController extends Controller
             "context" => "test container junit"
         ];
 
-
-
-
-
-
+        Log::info('body status PR:'.json_encode($body));
         curl_setopt_array($curl, array(
         CURLOPT_URL => $statusesUrl,
         CURLOPT_RETURNTRANSFER => true,        
@@ -115,6 +197,7 @@ class OrquestraController extends Controller
         ));
 
         $response = curl_exec($curl);
+        curl_close($curl);
         return $response;
     }
 
@@ -137,6 +220,7 @@ class OrquestraController extends Controller
         ));
 
         $responseObj = curl_exec($curl);
+        $err = curl_error($curl);
         curl_close($curl);
         return $responseObj;
     }
