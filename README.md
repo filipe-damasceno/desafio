@@ -73,3 +73,10 @@ Ex:
 https://2c39517a.ngrok.io/api/payload
 ```
 
+## Executando
+
+Nesse ponto se tem tres terminais abertos para monitorar a execução, basta criar uma PR para testar, o webhook esta configurado para notificar em qualquer evento de PR.
+
+Alem dos tres terminais existe um log em 
+
+desafio\orquestra_app\storage\logs\laravel.log
