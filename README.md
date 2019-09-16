@@ -58,8 +58,10 @@ Ngrok em execução em: http://localhost:4040
 Status do serviço (coletar url em command_line): http://localhost:4040/status 
 
 
-##Git Hub
+## Git Hub
+
 Alterar Payload URL em:
+
 https://github.com/filipe-damasceno/desafio/settings/hooks/139919415
 
 Colocar url coletada no passo anterior com sufixo (/api/payload)
