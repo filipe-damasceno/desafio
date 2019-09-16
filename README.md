@@ -80,3 +80,50 @@ Nesse ponto se tem tres terminais abertos para monitorar a execução, basta cri
 Alem dos tres terminais existe um log em 
 
 desafio\orquestra_app\storage\logs\laravel.log
+
+# Execução local para testes
+## Caso queira executar com docker compose localmente individualmente  bash:
+
+```
+mvn clean package -Dmaven.test.skip=true -f desafio/apirest/pom.xml
+```
+```
+mvn clean package -Dmaven.test.skip=true -f desafio/apirestteste/pom.xml
+```
+```
+docker-compose -f desafio/docker-compose.yml build
+```
+```
+docker pull postgres:10.4
+```
+```
+docker-compose -f desafio/docker-compose.yml up
+```
+
+## Rotas
+
+```
+curl -X GET \
+  http://localhost:8080/api/v1/vehicleId/999
+``` 
+```
+curl -X GET \
+  http://localhost:8080/api/v1/status 
+``` 
+```
+curl -X POST \
+  http://localhost:8080/api/v1/coordenada \
+  -H 'Content-Type: application/json' \
+  -d '{"lat": -3.734652, "long": -38.469755, "instant": "2018-08-08T23:48:15+00:00", "vehicleId": 12345}'
+``` 
+
+```
+curl -X GET \
+  http://localhost:9000/api/v1/status
+``` 
+```
+curl -X POST \
+  http://localhost:9000/api/v1/testApi \
+  -d http://docker-app:8080/api/v1/
+``` 
+
