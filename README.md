@@ -55,6 +55,7 @@ No local onde foi extraido o ngrok execute:
 Obs: token associado a minha conta 1QmY50YdSJ2mD6BQTZL4kqp3rZy_bjZmKa5PZ7kcG92xpPqk pode usar esse ou gerar outro
 
 Ngrok em execução em: http://localhost:4040
+
 Status do serviço (coletar url em command_line): http://localhost:4040/status 
 
 
