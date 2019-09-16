@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Filipe
  */
 public interface CoordenadasRepository extends JpaRepository<Coordenadas,Long>{
-    //List<Coordenadas> findByVehicleId(long id);
-    List<Coordenadas> findByVehicleIdOrderByInstantAsc(long id);
+    List<Coordenadas> findByVehicleId(long id);
+    //List<Coordenadas> findByVehicleIdOrderByInstantAsc(long id);
 }
