@@ -14,6 +14,20 @@
 ```
 git clone https://github.com/filipe-damasceno/desafio.git
 ``` 
+
+Para comunicação com API do github estou utilizando Personal access tokens, antes de continuar gere um token pessoal na sua conta (permissões de repo) em:
+
+
+https://github.com/settings/tokens
+
+e adicione o token em:
+
+desafio\orquestra_app\app\Helpers\functions_curl.php line 73
+
+Ex:
+```
+"Authorization: token 0f1de63eacd8768367cb20c3a5ccee5c38345cd0", 
+```
 ```
 cd desafio/orquestra_app/
 ```
